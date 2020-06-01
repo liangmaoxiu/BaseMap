@@ -1,8 +1,8 @@
 ﻿if (typeof DCI == "undefined") { var DCI = {}; }
 DCI.Route = {
-    map: null,//地图对象
-    graphicslayer: null,//显示图层
-    locator: null,//地理编码服务对象
+    map: null, //地图对象
+    graphicslayer: null, //显示图层
+    locator: null, //地理编码服务对象
     drawtool: null,
     flag: null,
     routeTask: null,
@@ -10,424 +10,331 @@ DCI.Route = {
     lastStop: null,
     routeSymbol: null,
     curGraphic: null,
-    pointlayer:null,
     html: "<div class='route_serch_left'>" +
-         "<input type='button' class='route_star' id='route1'>" +
-         "<input type='text' id='routeStar' class='route_txt'>" +
-         "<input type='button' class='route_point' id='point1'>" +
-         "</div>"+
-         "<div class='route_serch_left'>" +
-         "<input type='button' class='route_end' id='route2'>" +
-         "<input type='text' id='routeEnd' class='route_txt'>" +
-         "<input type='button' class='route_point' id='point2'>" +
-         "</div>"+
-         "<div id='routenavwatchQuery' class='routenav_watchQuery'></div>" +
-         "<!-- 路径导航查询获取结果显示 -->" +
-           "<div>" +
-              "<div id='routeShowList_scroll' class='route-content'>" +
-                 "<div id='routeshowList' style='width:100%;height:100%;margin-left:2px;'></div>" +
-              "</div>" +
-           "</div>",
+        "<input type='button' class='route_star' id='route1'>" +
+        "<input type='datetime-local' id='routeStar' class='route_txt'>" +
+        "</div>" +
+        "<div class='route_serch_left'>" +
+        "<input type='button' class='route_end' id='route2'>" +
+        "<input type='datetime-local' id='routeEnd' class='route_txt'>" +
+        "</div>" +
+        "<div id='routenavwatchQuery' class='routenav_watchQuery'></div>" +
+        "<!-- 历史轨迹获取结果显示 -->" +
+        "<div>" +
+        "<div id='routeShowList_scroll' class='route-content'>" +
+        "<div id='routeshowList' style='width:100%;height:100%;margin-left: 5px;margin-top:20px;'></div>" +
+        "</div>" +
+        "</div>",
     /*
-    *初始化加载函数
-    */
-    Init: function (map) {
+     *初始化加载函数
+     */
+    Init: function(map) {
         //动态设置高度
         $("#routeShowList_scroll").height($(".nav_Item_Content").height() - $(".route_serch_left").height() - $(".route_serch_left").height() - $("#routenavwatchQuery").height());
-        //dojo.require("esri.tasks.RouteTask");
-        //dojo.require("esri.tasks.RouteParameters");
-        //dojo.require("esri.tasks.locator");
         DCI.Route.map = map;
-        DCI.Route.pointlayer = new esri.layers.GraphicsLayer();
-        DCI.Route.map.addLayer(DCI.Route.pointlayer);//将图层赋给地图
-        DCI.Route.graphicslayer = new esri.layers.GraphicsLayer();
-        DCI.Route.graphicslayer.id = "route";
-        DCI.Route.map.addLayer(DCI.Route.graphicslayer);//将图层赋给地图
-        //DCI.Route.locator = new esri.tasks.Locator("http://localhost:6080/arcgis/rest/services/POIguangzhou_Locator/GeocodeServer");
-        DCI.Route.locator = new esri.tasks.Locator(MapConfig.locatorUrl);
-        DCI.Route.drawtool = new esri.toolbars.Draw(map, { showTooltips: true });
-        DCI.Route.drawtool.on("draw-end", DCI.Route.addToMap);
-        //路网初始化设置
-        // DCI.Route.routeSymbol = new esri.symbol.SimpleLineSymbol().setColor(new dojo.Color([0, 0, 255, 0.5])).setWidth(5);
-        DCI.Route.routeSymbol = new esri.symbol.SimpleLineSymbol().setColor(new dojo.Color([0, 0, 255, 0.5])).setWidth(5);
-        
-        //DCI.Route.routeTask = new esri.tasks.RouteTask("http://localhost:6080/arcgis/rest/services/road/NAServer/Route");
-        DCI.Route.routeTask = new esri.tasks.RouteTask(MapConfig.routetaskUrl);
-        DCI.Route.routeParams = new esri.tasks.RouteParameters();
-        DCI.Route.routeParams.stops = new esri.tasks.FeatureSet();
-        DCI.Route.routeParams.returnDirections = true;
-        DCI.Route.routeParams.returnRoutes = true;
-        DCI.Route.routeParams.returnStops = true;
-        DCI.Route.routeParams.outSpatialReference = DCI.Route.map.spatialReference;
-        DCI.Route.routeTask.on("solve-complete", DCI.Route.showRoute);
-        DCI.Route.routeTask.on("error", DCI.Route.errorRoute);
         //事件监控部分
         function InitEvent() {
             //查询按钮触发事件
-            $("#routenavwatchQuery").bind("click", function (event) {
-                //DCI.Route.map.graphics.clear();
-                DCI.Route.pointlayer.clear();
+            $("#routenavwatchQuery").bind("click", function(event) {
                 //清空数组
-                var keyword1 = $("#routeStar").val();
-                var keyword2 = $("#routeEnd").val();
-                if (keyword1 == "" || keyword1 == undefined) {
-                    promptdialog("提示信息", "起点不能为空!");
+                var start = $("#routeStar").val().replace(/[-T:]/g, "");
+                var end = $("#routeEnd").val().replace(/[-T:]/g, "");
+                if (start == "" || start == undefined) {
+                    promptdialog("提示信息", "起点时间不能为空!");
                     return;
                 }
-                else{
-                    DCI.Route.DoAddressToLocations(keyword1,0);
-                }
-                if (keyword2 == "" || keyword2 == undefined) {
-                    promptdialog("提示信息", "终点不能为空!");
+                if (end == "" || end == undefined) {
+                    promptdialog("提示信息", "终点时间不能为空!");
                     return;
                 }
-                else {
-                    DCI.Route.DoAddressToLocations(keyword2,1);
+                if (start > end) {
+                    promptdialog("提示信息", "起点时间不能大于终点时间!");
+                    return;
                 }
+                // 根据时间查询出员工以及坐标信息
+                DCI.Route.GetInfoByDate(start, end);
             })
-            //起点位置添加事件
-            $("#point1").bind("click", function (event) {
-                DCI.Route.pointlayer.clear();
-                DCI.Route.map.graphics.clear();
-                DCI.Route.routeParams.stops.features = [];
-                $("#routeStar").val("");
-                $("#routeEnd").val("");
-                DCI.Route.flag = true;
-
-                DCI.Route.map.setMapCursor('crosshair');
-                DCI.Route.drawtool.activate(esri.toolbars.Draw.POINT);
-            })
-            //终点位置添加事件
-            $("#point2").bind("click", function (event) {
-                DCI.Route.flag = false;
-                DCI.Route.map.setMapCursor('crosshair');
-                DCI.Route.drawtool.activate(esri.toolbars.Draw.POINT);
-            })
-            dojo.connect(DCI.Route.pointlayer, "onGraphicAdd", function (graphic) {
+            dojo.connect("onGraphicAdd", function(graphic) {
                 DCI.Route.curGraphic = graphic;
             });
-
-
         }
-        InitEvent();//私有方法可以在函数作用域范围内使用
-
-         //设置自动补全
-        DCI.Route.autoComple("routeStar");
-
-        DCI.Route.autoComple("routeEnd");
+        InitEvent(); //私有方法可以在函数作用域范围内使用
     },
-    //========自动补全的实现 为有个input 设置自动补全功能方法================
-    autoComple: function (elementID) {
-        //elementID ：为其设置自动补全的元素
-        $("#" + elementID).autocomplete({
-            source: function (request, response) {
-                var data = [];//初始化结果数组
-                var queryTask = "";
-                var query = new esri.tasks.Query();
-                query.returnGeometry = true;
-                query.outFields = ["BlockName"];
-                //query.outSpatialReference = { "wkid": 4326 };
-                query.where = "BlockName like '%" + request.term + "%'";
-                queryTask = new esri.tasks.QueryTask(MapConfig.routetaskUrl);
-                queryTask.execute(query, navInfoatuo);
-                function navInfoatuo(result) {
-                    for (var i = 0; i < 10; i++) {
-                        if (result.features[i] == undefined) //不够十条
-                            break;
-                        data.push(result.features[i].attributes.BlockName);
-                    }                
-                    response(data);
-                }
-
-                //response(dataArray);
-                // 将数组数据交给Autocomplete显示为菜单
-                // 如果情况特殊，你也可以不调用，从而不显示菜单
+    // 根据起始时间查询矿工信息
+    GetInfoByDate: function(start, end) {
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: backbasePath + '/apia/v1/arcgis/getInfoByDate',
+            dataType: 'json',
+            data: {
+                startTime: start,
+                endTime: end
             },
-            response: function (event, ui) {
-                // event 是当前事件对象
-                // ui对象仅有一个content属性，它表示当前用于显示菜单的数组数据
-                // 每个元素都是具有label和value属性的对象
-                // 你可以对属性进行更改，从而改变显示的菜单内容
-                var sourceData = [];
-            
-                for (var i = 0; i < ui.content.length; i++) {
-                    var text = ui.content[i].label;                 
-                    if ($(this).context.value) {
-                        var tempObj = {
-                            label: text.replace(
-                        new RegExp("(?![^&;]+;)(?!<[^<>]*)([" + $(this).context.value + "])(?![^<>]*>)(?![^&;]+;)", "gi"), "<strong style=\"color\:#3385ff\"'>$1</strong>"),
-                            value: text
-                        };
-                        ui.content[i] = tempObj;
+            async: true,
+            success: function(data) {
+                // 将返回的responseText 解析出来
+                if (data.code == "000000") {
+                    $("#locationList").hide();
+                    // 后台返回的结果
+                    var list = data.data;
+                    var divHtml = "<div id='workerList'></div>";
+                    $('#routeshowList').append(divHtml);
+                    //动态创建表格
+                    var tableWebsiteList = document.createElement('table');
+                    var trObject = document.createElement('tr');
+                    var th1 = document.createElement('th');
+                    th1.innerHTML = "姓名";
+                    th1.style.width = "60px";
+                    var th2 = document.createElement('th');
+                    th2.innerHTML = "工种";
+                    th2.style.width = "60px";
+                    var th3 = document.createElement('th');
+                    th3.innerHTML = "区队";
+                    th3.style.width = "100px";
+                    trObject.appendChild(th1);
+                    trObject.appendChild(th2);
+                    trObject.appendChild(th3);
+                    tableWebsiteList.appendChild(trObject);
+                    // 遍历数据动态建行
+                    for (var key in list) {
+                        var trObject = document.createElement('tr');
+                        var td1 = document.createElement('td');
+                        td1.innerHTML = '<a href="javascript:void(0);" onclick= DCI.Route.getInfoById("' + list[key].worker_id + '","' + list[key].name + '")>' + list[key].name + '</a>';
+                        var td2 = document.createElement('td');
+                        td2.innerHTML = list[key].worktype;
+                        var td3 = document.createElement('td');
+                        td3.innerHTML = list[key].sysdepartmentname;
+                        trObject.appendChild(td1);
+                        trObject.appendChild(td2);
+                        trObject.appendChild(td3);
+                        tableWebsiteList.appendChild(trObject);
                     }
+                    $('#workerList').append(tableWebsiteList);
                 }
             },
-            focus: function (event, ui) {
-                $(this).val(ui.item.value);
-                return false;
-            },
-            select: function (event, ui) {
-
-
-            }
-        }).autocomplete("instance")._renderItem = function (ul, item) {
-            return $("<li>")
-            .append("<a style='font-size:12px;'>" + item.label + "</a>")
-            .appendTo(ul);
-        };
-
-    },
-    showRoute: function (evt) {
-        $("#routeshowList").empty();
-        DCI.Route.map.graphics.add(evt.result.routeResults[0].route.setSymbol(DCI.Route.routeSymbol));//展示路径线路
-        var directionsFS = evt.result.routeResults[0].directions;
-        var i = 1;
-        for(var feature in directionsFS.features)
-        {
-            var text = "";
-            if (i == 1) {
-                text += "从起点开始";
-            }
-            else if (i == directionsFS.features.length) {
-                text += "终点结束";
-            }
-            else {
-                text += i + "." + directionsFS.features[feature].attributes.text;
-            }
-           
-            //判断路径段类型
-            var maneuverType = directionsFS.features[feature].attributes.maneuverType;
-            var fileName = DCI.Route.getImgFileName(maneuverType);
-            var imgpath = getRootPath() + "Content/images/route/" + fileName;
-
-            if (i > 1 && i < directionsFS.features.length)
-            {               
-                text += " (" + DCI.Route.formatDistance(directionsFS.features[feature].attributes.length, "米");
-                var time = DCI.Route.formatTime(directionsFS.features[feature].attributes.time);
-                if (time != "")
-                {
-                    text += ", " + time;
+            error: function(data) {
+                var result = "";
+                if (data.msg == '' || data.msg == null) {
+                    result = "查询数据报错";
+                } else {
+                    result = data.msg;
                 }
-                text += ")";
+                toastr.error(result);
             }
-            $('#routeshowList').append('<img src="' + imgpath + '" alt="" class="route_img" />');
-            $('#routeshowList').append('<div class="route_list">' + text + '</div>');
-            i++;
+        });
+    },
+    // 根据员工id进行坐标信息的查询
+    getInfoById: function(id, name) {
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: backbasePath + '/apia/v1/arcgis/getInfoById',
+            dataType: 'json',
+            data: {
+                id: id,
+            },
+            async: true,
+            success: function(data) {
+                // 创建线数组
+                var lines = new Array();
+                // 将返回的responseText 解析出来
+                if (data.code == "000000") {
+                    // 清空数据remove
+                    $('#locationList').remove();
+                    // 隐藏员工div
+                    $("#workerList").hide();
+                    // 显示坐标div
+                    $("#locationList").show();
+                    var divHtml = "<div id='locationList'></div>";
+                    $('#routeshowList').append(divHtml);
+                    // 后台返回的结果
+                    var list = data.data;
+                    //动态创建表格
+                    var info = "<div class='work-style'>员工：" + name + "&nbsp; 共有：" + data.count + "条记录 <span class='work-close' onclick=DCI.Route.close()>关闭</span></div>";
+                    $('#locationList').append(info);
+                    var tableWebsiteList = document.createElement('table');
+                    var trObject = document.createElement('tr');
+                    var th2 = document.createElement('th');
+                    th2.innerHTML = "时间";
+                    th2.style.width = "100px";
+                    var th3 = document.createElement('th');
+                    th3.innerHTML = "X坐标";
+                    th3.style.width = "120px";
+                    var th4 = document.createElement('th');
+                    th4.innerHTML = "Y坐标";
+                    th4.style.width = "120px";
+                    // trObject.appendChild(th1);
+                    trObject.appendChild(th2);
+                    trObject.appendChild(th3);
+                    trObject.appendChild(th4);
+                    tableWebsiteList.appendChild(trObject);
+                    // 遍历数据动态建行
+                    for (var key in list) {
+                        var tr = document.createElement('tr');
+                        var td2 = document.createElement('td');
+                        var point = list[key].time_point;
+                        if (point != "" && point != null) {
+                            var minutes = point.substring(8, 10);
+                            var seconds = point.substring(point.length - 2);
+                            //添加链接只在中间位置添加
+                            if (key == "0" || key == (list.length - 1)) {
+                                td2.innerHTML = minutes + ":" + seconds;
+                            } else {
+                                td2.innerHTML = '<a href="javascript:void(0);" onclick= DCI.Route.showRoute("' + list[key].x_axis + '","' + list[key].y_axis + '","' + id + '",1)>' + minutes + ':' + seconds + '</a>';
+                            }
+                        }
+                        var td3 = document.createElement('td');
+                        td3.innerHTML = list[key].x_axis;
+                        var td4 = document.createElement('td');
+                        td4.innerHTML = list[key].y_axis;
+                        tr.appendChild(td2);
+                        tr.appendChild(td3);
+                        tr.appendChild(td4);
+                        tableWebsiteList.appendChild(tr);
+                        // 将点加在线里面
+                        lines.push([list[key].x_axis, list[key].y_axis]);
+                    }
+                    $('#locationList').append(tableWebsiteList);
+                    // 根据点形成线，显示在地图上
+                    DCI.Route.showLine(lines, id);
+                }
+            },
+            error: function(data) {
+                var result = "";
+                if (data.msg == '' || data.msg == null) {
+                    result = "查询坐标数据报错";
+                } else {
+                    result = data.msg;
+                }
+                toastr.error(result);
+            }
+        });
+    },
+    // 关闭按钮
+    close: function() {
+        // 坐标信息页面隐藏 显示员工页面
+        $("#workerList").show();
+        $("#locationList").hide();
+        // 需要将地图上的小人和路径图层去掉
+        DCI.Route.clearAndhide();
+    },
+    // 根据坐标在地图上显示
+    showRoute: function(x, y, id, style) {
+        // 根据坐标形成一个点
+        var newPoint = new esri.geometry.Point({
+            "x": x,
+            "y": y,
+            "spatialReference": DCI.Route.map.spatialReference
+        }); 
+        // 图片路径
+        var imgpath = "";
+        if (style == "1") {
+            imgpath = getRootPath() + "Content/images/route/redCircle.png";     
+        } else {
+            imgpath = getRootPath() + "Content/images/route/worker.png";     
         }
-
+        // 根据图片形成一个点
+        var picSymbol = new esri.symbols.PictureMarkerSymbol(imgpath, 20, 20);  
+        // 根据坐标形成一个图形
+        var picGraphic = new esri.graphic(newPoint, picSymbol);   
+        // 将图形添加在地图上   
+        DCI.Route.map.graphics.add(picGraphic);
+        //点击弹出气泡窗口的详情
+        DCI.Route.map.graphics.on("click", function(evt) {
+            // 显示详情信息
+            DCI.Route.showDetail(evt, id);
+        });
     },
-    errorRoute: function (err) {
-        //alert("An error occured\n" + err.message + "\n" + err.details.join("\n"));
-        promptdialog("提示信息", "An error occured\n" + err.message);
-        DCI.Route.routeParams.stops.features.splice(0, 0, DCI.Route.lastStop);
-        DCI.Route.map.graphics.remove(DCI.Route.routeParams.stops.features.splice(1, 1)[0]);
+    // 选择人员显示详情信息
+    showDetail: function(evt, id) {
+        $.ajax({
+            cache: false,
+            type: "POST",
+            url: backbasePath + '/apia/v1/arcgis/getWorkerInfo',
+            dataType: 'json',
+            data: {
+                id: id
+            },
+            async: false,
+            success: function(data) {
+                if (data.code == "000000") {
+                    // 获得结果信息
+                    var list = data.data;
+                    var grap = evt.graphic;
+                    var zoompoint = null;
+                    zoompoint = grap.geometry;
+                    DCI.Route.map.centerAt(zoompoint);
+                    DCI.Route.map.infoWindow.resize(240, 210);
+                    var content = '<div class="waitpanel" style="position:relative;top:-30px;"><ul style="text-align:left;">' +
+                        '<li>姓名:' + list.name + '<li>' +
+                        '<li>年龄:' + list.age + '<li>' +
+                        '<li>工种:' + list.worktype + '<li>' +
+                        '<li>电话:' + list.mobile + '<li>' +
+                        '<li>住址:' + list.address + '<li>' +
+                        '<li>身份证:' + list.identity_num + '<li>' +
+                        '</ul></div>';
+                    // 标题显示部门名称
+                    DCI.Route.map.infoWindow.setTitle(list.sysdepartmentname);
+                    DCI.Route.map.infoWindow.setContent(content);
+                    setTimeout(function() {
+                        DCI.Route.map.infoWindow.show(zoompoint);
+                    }, 500);
+                }
+            },
+            error: function(data) {
+                var result = "";
+                if (data.msg == '' || data.msg == null) {
+                    result = "查询数据报错";
+                } else {
+                    result = data.msg;
+                }
+                toastr.error(result);
+            }
+        });
     },
-    /*
-     *获取路线提示的图片文件名
-     */
-    getImgFileName: function (maneuverType) {
-        var fileName="";
-        switch (maneuverType) { 
-            case "esriDMTStop":							 
-                fileName = "NAEndLocx.png";
-                break;
-            case "esriDMTStraight":
-                fileName="straight.png";
-                break;
-            case "esriDMTBearLeft":
-                fileName = "bear-left.png";
-                break;
-            case "esriDMTBearRight":
-                fileName = "bear-right.png";
-                break;
-            case "esriDMTTurnLeft":
-                fileName = "left.png";
-                break;
-            case "esriDMTTurnRight":
-                fileName = "right.png";
-                break;
-            case "esriDMTSharpLeft":
-                fileName = "sharp-left.png";
-                break;
-            case "esriDMTSharpRight":
-                fileName = "sharp-right.png";
-                break;
-            case "esriDMTUTurn":
-                fileName = "uturn.png";
-                break;
-            case "esriDMTFerry":
-                fileName = "ferry.png";
-                break;
-            case "esriDMTRoundabout":
-                fileName = "round-about.png";
-                break;
-            case "esriDMTHighwayMerge":
-                fileName = "highway-merge.png";
-                break;
-            case "esriDMTHighwayExit":
-                fileName = "highway-exit.png";
-                break;
-            case "esriDMTHighwayChange":
-                fileName = "highway-change.png";
-                break;
-            case "esriDMTForkCenter":
-                fileName = "fork-center.png";
-                break;
-            case "esriDMTForkLeft":
-                fileName = "fork-left.png";
-                break;
-            case "esriDMTForkRight":
-                fileName = "fork-right.png";
-                break;
-            case "esriDMTDepart":
-                fileName = "NAStartLocx.png";
-                break;
-            case "esriDMTTripItem":
-                fileName = "trip-item.png";
-                break;
-            case "esriDMTEndOfFerry":
-                fileName = "end-of-ferry.png";
-                break;
-            case "esriDMTTurnLeftRight":
-                fileName = "left-right.png";
-                break;
-            case "esriDMTTurnLeftLeft":
-                fileName = "left-left.png";
-                break;
-            case "esriDMTTurnRightLeft":
-                fileName = "right-left.png";
-                break;
-            case "esriDMTTurnRightRight":
-                fileName = "right-right.png";
-                break;
-					
+    // 根据坐标位置形成路线
+    showLine: function(lines, id) {
+        // x 坐标 y坐标
+        var x_axis;
+        var y_axis;
+        // 循环坐标信息获取第一个和最后一个坐标显示图片
+        for (var key in lines) {
+            if (key == "0" || key == (lines.length - 1)) {
+                x_axis = lines[key][0];
+                y_axis = lines[key][1];
+                DCI.Route.showRoute(x_axis, y_axis, id, "2");
+            }
         }
-        return fileName;
+        //创建客户端图层
+        var graphicsLayer = new esri.layers.GraphicsLayer();
+        //定义线符号
+        var lineSymbol = new esri.symbols.SimpleLineSymbol(esri.symbols.SimpleLineSymbol.STYLE_DASH, new esri.Color([255, 0, 0]), 2)
+        var geometry = new esri.geometry.Polyline({
+            "paths": [lines],
+            "spatialReference": DCI.Route.map.spatialReference
+        })
+        var graphic = new esri.graphic(geometry, lineSymbol); 
+        graphicsLayer.add(graphic);
+        DCI.Route.map.graphics.add(graphic);
+        DCI.Route.map.addLayer(graphicsLayer);
     },
-    /*
-     *距离单位换算
-     */
-    formatDistance:function(dist,units){
-        var result= "";				
-        var d = Math.round(dist * 100) / 100;				
-        if (d != 0)
-        {
-            result = d + " " + units;
-        }				
-        return result;
-    },
-    /*
-     *时间单位换算
-     */
-    formatTime:function(time){
-        var result="";				
-        var hr = Math.floor(time / 60);
-        var min = Math.round(time % 60);				
-        if (hr < 1 && min < 1)
-        {
-            result = "";
+    //清空和隐藏气泡窗口函数
+    clearAndhide: function() {
+        DCI.Route.map.graphics.clear();
+        for (var i = 0; i < DCI.Route.map.graphicsLayerIds.length; i++) {
+            var layer = DCI.Route.map.getLayer(DCI.Route.map.graphicsLayerIds[i]);
+            layer.clear();
         }
-        else if (hr < 1 && min < 2)
-        {
-            result = min + " 分钟";
-        }
-        else if (hr < 1)
-        {
-            result = min + " 分钟";
-        }
-        else
-        {
-            result = hr + " 小时 " + min + " 分钟";
-        }
-				
-        return result;
-    },
-    /*
-     *根据坐标点获取地名
-     */
-    addToMap: function (evt) {
-        if (DCI.Route.flag)   
-            var stopSymbol = new esri.symbol.PictureMarkerSymbol(getRootPath() + "Content/images/route/NAStartLocx.png", 29, 30);
-        else
-            var stopSymbol = new esri.symbol.PictureMarkerSymbol(getRootPath() + "Content/images/route/NAEndLocx.png", 29, 30);
-        var graphic = new esri.Graphic(evt.geometry, stopSymbol);
-        //DCI.Route.map.graphics.add(graphic);
-        DCI.Route.pointlayer.add(graphic);
-        DCI.Route.drawtool.deactivate();
-        DCI.Route.map.setMapCursor('auto');
-        DCI.Route.locator.locationToAddress(evt.geometry, 500, DCI.Route.GetAddress, DCI.Route.GetAddresserror);
-    },
-    /*
-     *获取地名
-     */
-    GetAddress: function (evt) {
-        if (DCI.Route.flag)
-            $("#routeStar").val(evt.address.SingleKey);
-        else
-            $("#routeEnd").val(evt.address.SingleKey);
-    },
-    /*
-    *获取地名失败
-    */
-    GetAddresserror: function (evt) {
-        if (DCI.Route.curGraphic)
-            DCI.Route.pointlayer.remove(DCI.Route.curGraphic);
-        promptdialog("提示信息","该点附近搜索不到相关信息");
-    },
-    /*
-     *根据地名获取坐标点
-     */
-    DoAddressToLocations: function (keyword,type) {
-        var address = { "Single Line Input": keyword };
-        var params = {address: address, searchExtent: DCI.Route.map.extent};
-        DCI.Route.locator.outSpatialReference = DCI.Route.map.spatialReference;
-        if(type == 0)
-            DCI.Route.locator.addressToLocations(params, DCI.Route.GetlocationsStart, DCI.Route.GetlocationsFault);
-        else
-            DCI.Route.locator.addressToLocations(params, DCI.Route.GetlocationsEnd, DCI.Route.GetlocationsFault);
-    },
-    /*
-     *根据地名获取坐标点信息失败
-    */
-    GetlocationsFault: function (evt) {
-        promptdialog("提示信息", "该地名获取不到相关的地理位置!");
-    },
-    /*
-     *获取起点名称坐标点
-     */
-    GetlocationsStart: function (evt) {
-        var point = new esri.geometry.Point(evt[0].location.x, evt[0].location.y, evt[0].location.spatialReference);
-        var stopSymbol = new esri.symbol.PictureMarkerSymbol(getRootPath() + "Content/images/route/NAStartLocx.png", 29, 30);
-        var stop = DCI.Route.map.graphics.add(new esri.Graphic(point, stopSymbol));
-        DCI.Route.routeParams.stops.features.push(stop);
-        if (DCI.Route.routeParams.stops.features.length >= 2) {
-            DCI.Route.routeTask.solve(DCI.Route.routeParams);
-            DCI.Route.lastStop = DCI.Route.routeParams.stops.features.splice(0, 1)[0];
-        }
-    },
-    /*
-     *获取终点名称坐标点
-     */
-    GetlocationsEnd: function (evt) {
-        var point = new esri.geometry.Point(evt[0].location.x, evt[0].location.y, evt[0].location.spatialReference);
-        var stopSymbol = new esri.symbol.PictureMarkerSymbol(getRootPath() + "Content/images/route/NAEndLocx.png", 29, 30);
-        var stop = DCI.Route.map.graphics.add(new esri.Graphic(point, stopSymbol));
-        DCI.Route.routeParams.stops.features.push(stop);
-        if (DCI.Route.routeParams.stops.features.length >= 2) {
-            DCI.Route.routeTask.solve(DCI.Route.routeParams);
-            DCI.Route.lastStop = DCI.Route.routeParams.stops.features.splice(0, 1)[0];
-        }
+        DCI.Route.map.infoWindow.hide();
     },
     /**
      * 切换到其他模块再回来--默认初始化状态
-    */
-    InitState: function () {
+     */
+    InitState: function() {
         //控制显示或隐藏
         $("#routeStar").val("");
         $("#routeEnd").val("");
         $("#routeshowList").empty();
-    },
-
-
-
+    }
 }

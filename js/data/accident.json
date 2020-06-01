@@ -1,0 +1,103 @@
+{
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {
+            "Id": 0,
+            "name": "铁法煤业（集团）有限责任公司",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.5523850, 42.44759900]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 1,
+            "name": "小康煤矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4795754, 42.48245998]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 2,
+            "name": "大隆矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.6060400, 42.44185900]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 3,
+            "name": "大兴煤矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.6950623, 42.43393077]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 4,
+            "name": "晓明矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.6309100, 42.443241]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 5,
+            "name": "晓南矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.608907, 42.359663]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 6,
+            "name": "小青煤矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.653235, 42.432642]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 7,
+            "name": "大平煤矿",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4603019014, 42.33517133]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 8,
+            "name": "大强煤矿有限责任公司",
+            "describe": "事故地点"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4606189, 42.40272952]
+        }
+    }]
+}

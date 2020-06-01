@@ -1,16 +1,25 @@
-﻿var allMap;//全局map变量
+﻿var allMap; //全局map变量
 var layerswitchertoolbar;
-var baselayer;//地图底图
+// 获取首页页面得到的id
+var id;
 if (typeof DCI == "undefined") { var DCI = {}; }
-dojo.addOnLoad(function () {
-    DCI.sidebarCtrl.initLayout();//动态初始化界面的布局
-    load2DMap();//初始化地图加载部分
+dojo.addOnLoad(function() {
+    // 获取上个页面传过来的参数
+    id = getId();
+    DCI.sidebarCtrl.initLayout(); //动态初始化界面的布局
+    load2DMap(); //初始化地图加载部分
 });
-(function () {
+(function() {
     dojo.require("esri.dijit.Legend");
     dojo.require("Extension.DrawEx");
     dojo.require("ExtensionDraw.DrawExt");
     dojo.require("esri.toolbars.draw");
+    dojo.require("esri.geometry.Point");
+    dojo.require("esri.graphic");
+    dojo.require("esri.geometry.Polyline");
+    dojo.require("esri.geometry.Polygon");
+    dojo.require("esri.symbols.PictureMarkerSymbol");
+    dojo.require("esri.layers.GraphicsLayer");
     dojo.require("esri.geometry.Extent");
     dojo.require("esri.geometry.webMercatorUtils");
     dojo.require("esri.dijit.OverviewMap");
@@ -20,7 +29,7 @@ dojo.addOnLoad(function () {
     dojo.require("esri.tasks.IdentifyTask");
     dojo.require("esri.tasks.IdentifyParameters");
     dojo.require("esri.dijit.InfoWindowLite");
-    dojo.require("dojo/dom-construct");
+    dojo.require("dojo.dom-construct");
     //最短路径分析需要引用
     dojo.require("esri.tasks.RouteTask");
     dojo.require("esri.tasks.query");
@@ -31,29 +40,29 @@ dojo.addOnLoad(function () {
     dojo.require("esri.symbols.TextSymbol");
     dojo.require("esri.symbols.SimpleMarkerSymbol");
     dojo.require("esri.symbols.SimpleLineSymbol");
+    dojo.require("esri.symbols.CartographicLineSymbol");
+    //esri.symbol.CartographicLineSymbol
     dojo.require("esri.renderers.SimpleRenderer");
     dojo.require("esri.tasks.FeatureSet");
     dojo.require("esri.geometry.Circle");
 })();
 /**
  * 初始化地图加载
-*/
+ */
 function load2DMap() {
     /**  加载底图切换工具
      *  //创建一个map对象，然后地图填充在div容器，通过div的ID（map）来关联;
      *  {}里面是构造地图的可选参数设置，logo设置图标是否显示，
      * lods是设置瓦片地图的显示级别level有哪些，从配置文件config获取
-    **/
+     **/
     var map = new esri.Map("map", { logo: false, slider: false });
     allMap = map;
     //type为地图类型，0为wmts，1为mapserver切片,2为高德地图矢量，3为高德卫星,4为天地图矢量,5为天地图卫星
-    var mapLabelArray = [
-                 { label: MapConfig.arcvecMap.labelUrl, type: MapConfig.arcvecMap.type, url: { map: MapConfig.arcvecMap.Url, anno: "" }, className: "vecType" },
-    ];
+    var mapLabelArray = setMapServer(id);
     //默认加载第一个图层,参数说明:map为地图对象;mapLabelArray图层数组配置;false或者true,说明是否重新创建map对象,假如map的瓦片级别以及分辨率和坐标系不一致的话,设置true,反之设置false
     layerswitchertoolbar = new LayerSwitcherToolbar(map, mapLabelArray, false);
     //设置地图初始范围
-    var initExtent = new esri.geometry.Extent({ xmin: MapConfig.mapInitParams.extent.xmin, ymin: MapConfig.mapInitParams.extent.ymin, xmax: MapConfig.mapInitParams.extent.xmax, ymax: MapConfig.mapInitParams.extent.ymax, spatialReference: MapConfig.mapInitParams.spatialReference });
+    var initExtent = setExtend(id);
     map.setExtent(initExtent);
     //加载鹰眼
     var overviewMapDijit = new esri.dijit.OverviewMap({
@@ -67,7 +76,7 @@ function load2DMap() {
     var scalebar = new esri.dijit.Scalebar({
         map: map,
         attachTo: "bottom-left",
-        scalebarStyle: "ruler",//line
+        scalebarStyle: "ruler", //line
         scalebarUnit: "metric"
     });
     //滚动条样式
@@ -79,7 +88,7 @@ function load2DMap() {
     //自定义地图导航控件
     showSlider(initExtent, MapConfig.sliderConfig, map);
     //地图加载函数
-    map.on("load", function () {
+    map.on("load", function() {
         //加载底图图例
         //创建图例对象
         var legend = new esri.dijit.Legend({
@@ -100,59 +109,60 @@ function load2DMap() {
     //动态创建主界面左边菜单栏
     //地图图层
     var panel2 = DCI.sidebarCtrl.createItem("地图图层", "图层", true, "nav_but_layer", "layermodel");
-    panel2.append(DCI.Catalog.Html);//加载显示的内容
+    panel2.append(DCI.Catalog.Html); //加载显示的内容
     DCI.Catalog.Init(map);
     //图层属性查询
     var panel = DCI.sidebarCtrl.createItem("地图搜索", "搜索", false, "nav_but_poisearch", "poisearch");
-    panel.append(DCI.Poi.InitHtml);//加载显示的内容
+    panel.append(DCI.Poi.InitHtml); //加载显示的内容
     DCI.Poi.Init(map);
     //空间查询
     var pane1 = DCI.sidebarCtrl.createItem("空间查询", "查询", false, "nav_but_spa", "spatialQuery");
-    pane1.append(DCI.SpatialQuery.Html);//加载显示的内容
+    pane1.append(DCI.SpatialQuery.Html); //加载显示的内容
     DCI.SpatialQuery.Init(map);
     //最短路径分析
-    var panel = DCI.sidebarCtrl.createItem("路线导航", "导航", false, "nav_but_ml", "road");
-    panel.append(DCI.Route.html);//加载显示的内容
+    var panel = DCI.sidebarCtrl.createItem("路线导航", "轨迹", false, "nav_but_ml", "road");
+    panel.append(DCI.Route.html); //加载显示的内容
     DCI.Route.Init(map);
     //路径附近设施服务分析
     var panel = DCI.sidebarCtrl.createItem("路线设施", "设施", false, "nav_but_ml", "closestroad");
-    panel.append(ems.route.html);//加载显示的内容
+    panel.append(ems.route.html); //加载显示的内容
     ems.route.Init(map);
 
 }
 /**
  * 自定义地图导航控件
-*/
-function showSlider(fullExtent,config,map) {
+ */
+function showSlider(fullExtent, config, map) {
     config.targetId = "map";
     var toolBar = new MapNavigationToolbar(config);
     var _map = map;
     /* 地图上移 */
-    toolBar.onMoveUp = function () { _map.panUp(); };
+    toolBar.onMoveUp = function() { _map.panUp(); };
     /* 地图下移 */
-    toolBar.onMoveDown = function () { _map.panDown(); };
+    toolBar.onMoveDown = function() { _map.panDown(); };
     /* 地图左移 */
-    toolBar.onMoveLeft = function () { _map.panLeft(); };
+    toolBar.onMoveLeft = function() { _map.panLeft(); };
     /* 地图右移 */
-    toolBar.onMoveRight = function () { _map.panRight(); };
+    toolBar.onMoveRight = function() { _map.panRight(); };
     /* 地图全图 */
-    toolBar.onFullMap = function () { _map.setExtent(fullExtent); };
+    toolBar.onFullMap = function() { _map.setExtent(fullExtent); };
     /* 地图放大 */
-    toolBar.onZoomIn = function () { _map.setLevel(toolBar.getValue()); };
+    toolBar.onZoomIn = function() { _map.setLevel(toolBar.getValue()); };
     /* 地图缩小 */
-    toolBar.onZoomOut = function () { _map.setLevel(toolBar.getValue()); };
+    toolBar.onZoomOut = function() { _map.setLevel(toolBar.getValue()); };
     /* 滑动条滑动结束 */
-    toolBar.onSliderEnd = function () { _map.setLevel(toolBar.getValue()); };
+    toolBar.onSliderEnd = function() { _map.setLevel(toolBar.getValue()); };
     /* 地图级别标记-街道 */
-    toolBar.onMark_Street = function () { _map.setLevel(config.marksShow.streetLevel); };
+    toolBar.onMark_Street = function() { _map.setLevel(config.marksShow.streetLevel); };
     /* 地图级别标记-城市 */
-    toolBar.onMark_City = function () { _map.setLevel(config.marksShow.cityLevel); };
+    toolBar.onMark_City = function() { _map.setLevel(config.marksShow.cityLevel); };
     /* 地图级别标记-省级 */
-    toolBar.onMark_Province = function () { _map.setLevel(config.marksShow.provinceLevel); };
+    toolBar.onMark_Province = function() { _map.setLevel(config.marksShow.provinceLevel); };
     /* 地图级别标记-国家 */
-    toolBar.onMark_Country = function () { _map.setLevel(config.marksShow.countryLevel); };
+    toolBar.onMark_Country = function() { _map.setLevel(config.marksShow.countryLevel); };
     toolBar.create();
     dojo.connect(_map, "onZoomEnd", zoomEnd);
+
     function zoomEnd(extent, zoomFactor, anchor, level) {
         toolBar.setValue(level);
     }
@@ -160,13 +170,12 @@ function showSlider(fullExtent,config,map) {
 }
 /**
  * 显示地图坐标
-*/
+ */
 function showCoordinates(map) {
     var coordinatesDiv = document.getElementById("map_coordinates");
     if (coordinatesDiv) {
         coordinatesDiv.style.display = "block";
-    }
-    else {
+    } else {
         var _divID_coordinates = "map_coordinates";
         coordinatesDiv = document.createElement("div");
         coordinatesDiv.id = _divID_coordinates;
@@ -175,6 +184,7 @@ function showCoordinates(map) {
         document.getElementById("map").appendChild(coordinatesDiv);
         dojo.connect(map, "onMouseMove", showCoords);
         dojo.connect(map, "onMouseDrag", showCoords);
+
         function showCoords(evt) {
             evt = evt ? evt : (window.event ? window.event : null);
             var mp = evt.mapPoint;
@@ -182,22 +192,82 @@ function showCoordinates(map) {
         }
     }
 }
+
+/**
+ * 获取id数据
+ */
+function getId() {
+    //获取当前url地址,如果没参数.直接返回
+    if (document.URL.indexOf("?") < 0) return;
+    var str = document.URL.split("?")[1];
+    var obj = {};
+    var arr;
+    //当只有一个参数传过来时
+    if (str.indexOf("&") < 0) {
+        if (str.indexOf("=") < 0) return;
+        arr = str.split("=");
+        // obj[arr[0]] = arr[1];
+        obj = arr[1];
+        return obj;
+    }
+}
+/**
+ * 根据不同的id设置不同的煤矿服务
+ */
+function setMapServer(id) {
+    var selectServer;
+    if (id == "0") {
+        selectServer = [{ label: MapConfig.arcvecMap.labelUrl, type: MapConfig.arcvecMap.type, url: { map: MapConfig.arcvecMap.Url, anno: "" }, className: "vecType" }, ];
+    } else {
+        selectServer = [
+            { label: MapConfig.leaderMap.labelUrl, type: MapConfig.leaderMap.type, url: { map: MapConfig.leaderMap.Url, anno: "" }, className: "vecType" },
+        ];
+    }
+    return selectServer;
+}
+
+/**
+ * 根据不同的id设置不同地图范围
+ */
+function setExtend(id) {
+    var xmin;
+    var ymin;
+    var xmax;
+    var ymax;
+    var spatialReference;
+    var initExtent;
+    if (id == "0") {
+        xmin = MapConfig.mapInitParams.extent.xmin;
+        ymin = MapConfig.mapInitParams.extent.ymin;
+        xmax = MapConfig.mapInitParams.extent.xmax;
+        ymax = MapConfig.mapInitParams.extent.ymax;
+        spatialReference = MapConfig.mapInitParams.spatialReference;
+    } else {
+        xmin = MapConfig.daLongInitParams.fullExtent.xmin;
+        ymin = MapConfig.daLongInitParams.fullExtent.ymin;
+        xmax = MapConfig.daLongInitParams.fullExtent.xmax;
+        ymax = MapConfig.daLongInitParams.fullExtent.ymax;
+        spatialReference = MapConfig.daLongInitParams.spatialReference;
+    }
+    initExtent = new esri.geometry.Extent({ xmin: xmin, ymin: ymin, xmax: xmax, ymax: ymax, spatialReference: spatialReference });
+    return initExtent;
+}
 /**
  * 动态初始化界面的布局
  * 控制左边的导航菜单
-*/
+ */
 DCI.sidebarCtrl = {
     NavBar: null,
     NavContent: null,
 
-    initLayout: function () {
+    initLayout: function() {
         NavBar = $('<div id="nav_bar" class="nav_bar"></div>');
         NavContent = $('<div id="nav_Content" class="nav_Content"></div>');
         $("#sidebar").append(NavBar);
         $("#sidebar").append(NavContent);
     },
 
-    createItem: function (title, name, isHigh, cssName, id) {
+    createItem: function(title, name, isHigh, cssName, id) {
         var navItem = $('<div></div>');
         navItem.attr("id", id);
         navItem.attr("title", title);
@@ -214,20 +284,20 @@ DCI.sidebarCtrl = {
         $("#nav_bar").append(navItem);
         var navItemContent = $('<div class="nav_Item_Content"></div>');
         $("#nav_Content").append(navItemContent);
-        navItem.click(function () {
+        navItem.click(function() {
             $(".nav_Item_Content").css("display", "none");
             navItemContent.css("display", "block");
             $(".nav_but").attr("class", "nav_but");
             this.className = "nav_but nav_sel";
             var id = this.id;
             switch (id) {
-                case "poisearch"://地图搜索
+                case "poisearch": //地图搜索
                     DCI.Poi.InitState();
                     break;
-                case "spatialQuery"://空间查询
+                case "spatialQuery": //空间查询
                     DCI.SpatialQuery.InitState();
                     break;
-                case "road"://最短路径分析
+                case "road": //最短路径分析
                     DCI.Route.InitState();
                     break;
             }
@@ -236,9 +306,8 @@ DCI.sidebarCtrl = {
         });
         return navItemContent;
     },
-    clear: function () {
+    clear: function() {
         $("#nav_bar").children().remove();
         $("#nav_Content").children().remove();
     }
-
 }
