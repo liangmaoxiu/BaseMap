@@ -1,0 +1,112 @@
+{
+    "type": "FeatureCollection",
+    "features": [{
+        "type": "Feature",
+        "properties": {
+            "Id": 0,
+            "name": "铁法煤业（集团）有限责任公司",
+            "address": "(0411)82812888-3806",
+            "phone": "辽宁省铁岭市调兵山市人民路17号"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.552385, 42.447599]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 1,
+            "name": "铁法煤业（集团）有限责任公司小康煤矿",
+            "address": "(0411)82812888-3806",
+            "phone": "红土砬子村附近"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4795753611, 42.4824599775]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 2,
+            "name": "铁法煤业（集团）有限责任公司大隆矿",
+            "address": "(0411)82812888-3806",
+            "phone": "辽宁省铁岭市调兵山市"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.60604, 42.441859]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 3,
+            "name": "铁法煤业（集团）有限责任公司大兴煤矿",
+            "address": "(0411)82812888-3806",
+            "phone": "双树子煤矿有限公司"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.6950623458, 42.4339307716]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 4,
+            "name": "铁法煤业（集团）有限责任公司晓明矿",
+            "address": "(0411)82812888-3806",
+            "phone": "铁岭市调兵山市一零六省道"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.63091, 42.443241]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 5,
+            "name": "铁法煤业（集团）有限责任公司晓南矿",
+            "address": "(0411)82812888-3806",
+            "phone": "辽宁省铁岭市调兵山市晓南镇"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.608907, 42.359663]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 5,
+            "name": "铁法煤业（集团）有限责任公司小青煤矿",
+            "address": "(0411)82812888-3806",
+            "phone": "铁岭市调兵山市"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.653235, 42.432642]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 5,
+            "name": "铁法煤业（集团）有限责任公司大平煤矿",
+            "address": "(0411)82812888-3806",
+            "phone": "辽宁省铁岭市调兵山市晓南镇"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4603019014, 42.3351713345]
+        }
+    }, {
+        "type": "Feature",
+        "properties": {
+            "Id": 5,
+            "name": "铁法煤业集团大强煤矿有限责任公司",
+            "address": "(0411)82812888-3806",
+            "phone": "喇嘛山北、钱家沟南"
+        },
+        "geometry": {
+            "type": "Point",
+            "coordinates": [123.4606189402, 42.4027295173]
+        }
+    }]
+}
