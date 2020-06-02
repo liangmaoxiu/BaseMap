@@ -8,12 +8,12 @@ DCI.map2dTool = {
     dialog: null,//对话框
     viewbar2dHtml: "<div class='alleft_top_rt'>" +
         "<ul>" +
-        "<li class='zoomOut' id='worker'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>人员</a></li>" +
-        "<li class='publine'></li>" +
-        "<li class='zoomOut' id='goods'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>物资</a></li>" +
-        "<li class='publine'></li>" + 
-        "<li class='zoomOut' id='warnIn'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>预警</a></li>" +
-        "<li class='publine'></li>" +
+            "<li class='zoomOut' id='worker'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>人员</a></li>" +
+            "<li class='publine'></li>" +
+            "<li class='zoomOut' id='goods'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>物资</a></li>" +
+            "<li class='publine'></li>" + 
+            "<li class='zoomOut' id='warnIn'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>预警</a></li>" +
+            "<li class='publine'></li>" +
         "</ul>" +
         "</div>",
     toolbar2dHtml: "<div class='alright_top_rt'>" +
@@ -61,12 +61,22 @@ DCI.map2dTool = {
             child.remove();
         }
         $("#tool_container").append(DCI.map2dTool.viewbar2dHtml);
+        
         //左边工具栏  人员
-
         $("#worker").click(function(){
-            map.graphics.clear();//清除其他图层
-            DCI.poup.showPoup();
-
+            DCI.poup.clearAndhide();//清除其他图层
+            DCI.poup.showPoup("P");
+        });
+         //左边工具栏  物资
+         $("#goods").click(function(){
+            DCI.poup.clearAndhide();//清除其他图层
+            DCI.poup.showPoup("G");
+        });
+         //左边工具栏  预警
+         $("#warnIn").click(function(){
+            //清除其他图层
+            DCI.poup.clearAndhide();
+            DCI.poup.showPoup("W");
         });
 
         $("#tool_container").append(DCI.map2dTool.toolbar2dHtml);
@@ -218,6 +228,13 @@ DCI.map2dTool = {
             }
         }
     },
-
-
+    //清空和隐藏气泡窗口函数
+    clearAndhide: function() {
+        map.graphics.clear();
+        for (var i = 0; i < map.graphicsLayerIds.length; i++) {
+            var layer = map.getLayer(map.graphicsLayerIds[i]);
+            layer.clear();
+        }
+        map.infoWindow.hide();
+    }
 }

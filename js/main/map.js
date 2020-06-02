@@ -68,9 +68,13 @@ function load2DMap() {
             { label: MapConfig.ktMap[i].labelUrl, type: MapConfig.ktMap[i].type, url: { map: MapConfig.ktMap[i].Url, anno: "" }, className: "vecType" },
         ];
         initExtent = new esri.geometry.Extent({ xmin: MapConfig.ktInit[i].mapInitParams.extent.xmin, ymin: MapConfig.ktInit[i].mapInitParams.extent.ymin, xmax: MapConfig.ktInit[i].mapInitParams.extent.xmax, ymax: MapConfig.ktInit[i].mapInitParams.extent.ymax, spatialReference: MapConfig.ktInit[i].mapInitParams.spatialReference });
-        map.setExtent(initExtent);
+       }else{
+        mapLabelArray = [
+            { label: MapConfig.arcimgMap.labelUrl, type: MapConfig.arcimgMap.type, url: { map: MapConfig.arcimgMap.Url, anno: "" }, className: "vecType" },
+        ];
+        initExtent = new esri.geometry.Extent({ xmin: MapConfig.mapInitParams.extent.xmin, ymin: MapConfig.mapInitParams.extent.ymin, xmax: MapConfig.mapInitParams.extent.xmax, ymax: MapConfig.mapInitParams.extent.ymax, spatialReference: MapConfig.mapInitParams.spatialReference });
        }
-
+       map.setExtent(initExtent);
     }
     //------------------------------
     //type为地图类型，0为wmts，1为mapserver切片,2为高德地图矢量，3为高德卫星,4为天地图矢量,5为天地图卫星
@@ -150,7 +154,7 @@ function load2DMap() {
     DCI.poup.Init(map);
 
 }
-
+// 获得煤矿id
 function GetQueryString(name)
 {
      var reg = new RegExp("(^|&)"+ name +"=([^&]*)(&|$)");

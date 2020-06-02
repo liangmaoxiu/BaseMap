@@ -88,10 +88,8 @@ define([
                 this.infoTemplate.setContent("<b class='popupTitle'>${name}</b>" +
                     "<div class='hzLine'></div>" +
                     "<div class='popupContent'>" +
-                    //"<i class='glyphicon glyphicon-random'></i><b>地址: </b> ${address}<br/>" +
-                    //"<i class='glyphicon glyphicon-share'></i><b>联系方式: </b> ${phone}<br/>" +
-                    "<b>地址: </b> ${address}<br/>" +
-                    "<b>联系方式: </b> ${phone}<br/>" + "<a href='map.html?id=${Id}'>前往矿图</a></br>"+
+                    "<b>联系方式: </b> ${phone}<br/>" +
+                    "<b>地址: </b> ${address}<br/>" +"<a href='map.html?id=${Id}'>前往矿图</a></br>"+
                     "</div>"
                 );
             }

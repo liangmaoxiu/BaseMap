@@ -51,8 +51,8 @@ MapConfig.routeUrl = "http://192.168.31.41:6080/arcgis/rest/services/tfmine/tfmi
  */
 MapConfig.arcvecMap = { Url: "http://cache1.arcgisonline.cn/arcgis/rest/services/ChinaOnlineCommunity/MapServer", labelUrl: "矢量", type: 1 }; //大连矢量底图服务-ArcGIS切片格式
 MapConfig.arcimgMap = { Url: "http://192.168.31.41:6080/arcgis/rest/services/tfmine/tfmine14dy/MapServer", labelUrl: "影像", type: 8 }; //大连影像底图服务-ArcGIS切片格式
-WEBPATH = "http://192.168.31.18:8080/BaseMap/";
-backbasePath = "http://192.168.31.18:9010/";
+WEBPATH = "http://localhost:8080/BaseMap/";
+backbasePath = "http://192.168.31.81:9010/";
 /*图层目录构造*/
 MapConfig.zNodes = [
     { id: 1, pId: 0, name: "图层目录", checked: false, iconOpen: "" + WEBPATH + "Content/images/legend/1_open.png", iconClose: "" + WEBPATH + "Content/images/legend/1_close.png" },
@@ -64,10 +64,12 @@ MapConfig.zNodes = [
 MapConfig.fields={
     "metro":{
         simple:[
-            {field:"Name",alias:"职工姓名"},{field:"Time",alias:"井下时间"},{field:"Code",alias:"编码"},{field:"Tip",alias:"备注"}
-        ],
-        warn:[
-            {field:"Gas",alias:"瓦斯"},{field:"Air",alias:"通风"},{field:"Roof",alias:"顶板"},{field:"Tip",alias:"其他"}
+            {field:"Name",alias:"姓名"},{field:"Code",alias:"证件"},{field:"Phone",alias:"电话"},{field:"Address",alias:"地址"}
+        ]
+    },
+    "goods":{
+        simple:[
+            {field:"Name",alias:"名称"},{field:"Code",alias:"编号"},{field:"Number",alias:"数量"},{field:"Note",alias:"备注"}
         ]
     }
 };
@@ -77,9 +79,9 @@ MapConfig.ktMap=[
     {id:0,name:"集团煤矿",Url:"	http://192.168.31.41:6080/arcgis/rest/services/XHG/813Dy/MapServer",labelUrl:"矢量",type:8}
 ];
 
-MapConfig.ktInit = [{
-    id: 0,
-    mapInitParams: { // 初始化的位置就是发布成功之后服务上面的数值
+MapConfig.ktInit = [
+    {id: 0, 
+        mapInitParams: { // 初始化的位置就是发布成功之后服务上面的数值
         fullExtent: { //全图范围
             xmin: 37613312.65519956,
             ymin: 4170982.7700805664,
@@ -121,6 +123,7 @@ MapConfig.ktInit = [{
                 "resolution": 8466.683600033868,
                 "scale": 32000000
             }
-        ]
+        ]}
+
     }
-}];
+];
