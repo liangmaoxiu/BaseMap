@@ -53,6 +53,7 @@ MapConfig.arcvecMap = { Url: "http://cache1.arcgisonline.cn/arcgis/rest/services
 MapConfig.arcimgMap = { Url: "http://192.168.31.41:6080/arcgis/rest/services/tfmine/tfmine14dy/MapServer", labelUrl: "影像", type: 8 }; //大连影像底图服务-ArcGIS切片格式
 WEBPATH = "http://localhost:8080/BaseMap/";
 backbasePath = "http://192.168.31.81:9010/";
+MapConfig.frontbasePath = "http://127.0.0.1:8080/";
 /*图层目录构造*/
 MapConfig.zNodes = [
     { id: 1, pId: 0, name: "图层目录", checked: false, iconOpen: "" + WEBPATH + "Content/images/legend/1_open.png", iconClose: "" + WEBPATH + "Content/images/legend/1_close.png" },

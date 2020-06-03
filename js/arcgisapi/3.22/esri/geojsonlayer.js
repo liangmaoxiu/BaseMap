@@ -181,7 +181,6 @@ define([
 
         // GraphicLayer overrides
         _setMap: function(map, surface) {
-            console.log("setMap");
             var div = this.inherited(arguments);
             // Check spatial reference
             if (!this._validState) {
@@ -217,7 +216,6 @@ define([
 
         // GeoJsonLayer class functions
         _loadGeoJson: function() {
-            console.log("_loadGeoJson");
             if (this._data) {
                 // Load data
                 this._getGeoJson(this._data);
@@ -229,7 +227,6 @@ define([
 
         _getGeoJsonXhr: function(url) {
             // xhr request to get data
-            console.log("_getGeoJsonXhr");
             var requestHandle = esriRequest({
                 url: url,
                 handleAs: "json"
@@ -240,7 +237,6 @@ define([
 
         _getGeoJson: function(geojson) {
             // Check data
-            console.log("_getGeoJson");
             if (geojson.type !== "FeatureCollection" || !geojson.features) {
                 console.error("GeoJsonLayer Error: Invalid GeoJSON FeatureCollection. Check url or data structure.");
                 return;
@@ -253,7 +249,6 @@ define([
 
         // GeoJSON to ArcGIS JSON
         _terraformerConverter: function(geojson) {
-            console.log("_terraformerConverter");
             var json,
                 arcgis;
             // Convert the geojson object to a Primitive json representation

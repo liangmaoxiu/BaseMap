@@ -227,14 +227,5 @@ DCI.map2dTool = {
                 DCI.map2dTool.map.setLevel(parseInt(DCI.map2dTool.map.getLevel()) - 1);
             }
         }
-    },
-    //清空和隐藏气泡窗口函数
-    clearAndhide: function() {
-        map.graphics.clear();
-        for (var i = 0; i < map.graphicsLayerIds.length; i++) {
-            var layer = map.getLayer(map.graphicsLayerIds[i]);
-            layer.clear();
-        }
-        map.infoWindow.hide();
     }
 }
