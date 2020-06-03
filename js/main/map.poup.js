@@ -35,6 +35,7 @@ DCI.poup = {
             infoType="goods"
         }else{
             url =backbasePath + '/apia/v1/arcgis/getAllWarning';
+            infoType="warn"
         }
         $.ajax({
             cache: false,
@@ -51,8 +52,8 @@ DCI.poup = {
                     // 后台返回的结果
                     var list = data.data;
                     var rExtent = null;
-                    // 坐标符号
-                    var symbol = new esri.symbol.PictureMarkerSymbol(getRootPath() + "Content/images/poi/poiLocation.png", 24, 24);
+                    // 图片类型
+                    var imgType = getRootPath() + "Content/images/poi/poiLocation.png";
                     // 遍历数据
                     for (var key in list) {
                         var htmlstr = DCI.poup.getQueryWinContent(list[key], infoType,style);
@@ -66,6 +67,16 @@ DCI.poup = {
                             "y":list[key].y_axis,
                             "spatialReference": DCI.Route.map.spatialReference
                         }); 
+                        // 预警不同的类别显示不同的图片
+                        if(style == "W"){
+                            if(list[key].level == "重大"){
+                                imgType = getRootPath() + "Content/images/plot/point1.png";
+                            }else{
+                                imgType = getRootPath() + "Content/images/plot/point2.png";
+                            }
+                        }
+                          // 坐标符号
+                        var symbol = new esri.symbol.PictureMarkerSymbol(imgType, 24, 24);
                         var baseGraphic = new esri.Graphic(newPoint, symbol, attr);
                         //创建客户端图层
                         graphicsLayer = new esri.layers.GraphicsLayer();
@@ -161,6 +172,38 @@ DCI.poup = {
                         html += "<tr>" +
                         "<td><label>" + fields[i].alias + ":</label></td>" +
                         "<td><input id='" + fields[i].field + "' type='text' value='" + json.planresources_note + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
+                        "</tr>";
+                    }
+                } 
+                else{
+                    if( fields[i].field == "Name"){
+                        html += "<tr>" +
+                        "<td><label>" + fields[i].alias + ":</label></td>" +
+                        "<td><input id='" + fields[i].field + "' type='text' value='" + json.name + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
+                        "</tr>";
+                    }
+                    else if( fields[i].field == "Code"){
+                        html += "<tr>" +
+                        "<td><label>" + fields[i].alias + ":</label></td>" +
+                        "<td><input id='" + fields[i].field + "' type='text' value='" + json.code + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
+                        "</tr>";
+                    }
+                    else if( fields[i].field == "Kind"){
+                        html += "<tr>" +
+                        "<td><label>" + fields[i].alias + ":</label></td>" +
+                        "<td><input id='" + fields[i].field + "' type='text' value='" + json.kind + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
+                        "</tr>";
+                    }
+                    else if( fields[i].field == "Level"){
+                        html += "<tr>" +
+                        "<td><label>" + fields[i].alias + ":</label></td>" +
+                        "<td><input id='" + fields[i].field + "' type='text' value='" + json.level + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
+                        "</tr>";
+                    }
+                    else if( fields[i].field == "Note"){
+                        html += "<tr>" +
+                        "<td><label>" + fields[i].alias + ":</label></td>" +
+                        "<td><input id='" + fields[i].field + "' type='text' value='" + json.note + "' style='height:22px;width:200px;margin:1px;'></input></td>" +
                         "</tr>";
                     }
                 } 

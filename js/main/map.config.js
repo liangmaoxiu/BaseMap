@@ -69,7 +69,12 @@ MapConfig.fields={
     },
     "goods":{
         simple:[
-            {field:"Name",alias:"名称"},{field:"Code",alias:"编号"},{field:"Number",alias:"数量"},{field:"Note",alias:"备注"}
+            {field:"Code",alias:"编号"},{field:"Name",alias:"名称"},{field:"Number",alias:"数量"},{field:"Note",alias:"备注"}
+        ]
+    },
+    "warn":{
+        simple:[
+            {field:"Code",alias:"编号"},{field:"Name",alias:"名称"},{field:"Kind",alias:"种类"},{field:"Level",alias:"级别"},{field:"Note",alias:"备注"}
         ]
     }
 };
