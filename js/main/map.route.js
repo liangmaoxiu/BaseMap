@@ -229,13 +229,16 @@ DCI.Route = {
         }); 
         // 图片路径
         var imgpath = "";
+        var width_height = "";
         if (style == "1") {
-            imgpath = getRootPath() + "Content/images/route/redCircle.png";     
+            imgpath = getRootPath() + "Content/images/route/redCircle.png"; 
+            width_height=10;    
         } else {
             imgpath = getRootPath() + "Content/images/route/worker.png";     
+            width_height=20;    
         }
         // 根据图片形成一个点
-        var picSymbol = new esri.symbols.PictureMarkerSymbol(imgpath, 20, 20);  
+        var picSymbol = new esri.symbols.PictureMarkerSymbol(imgpath, width_height, width_height);  
         // 根据坐标形成一个图形
         var picGraphic = new esri.graphic(newPoint, picSymbol);   
         // 将图形添加在地图上   

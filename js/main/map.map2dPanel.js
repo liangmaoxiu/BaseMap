@@ -14,6 +14,8 @@ DCI.map2dTool = {
             "<li class='publine'></li>" + 
             "<li class='zoomOut' id='warnIn'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>预警</a></li>" +
             "<li class='publine'></li>" +
+            "<li class='warnArea' id='warnArea'><a href='javascript:void(0)' class='zoomOutbg'><span class='zoomOutlabel'></span>危险区域</a></li>" +
+            "<li class='publine'></li>" +
         "</ul>" +
         "</div>",
     toolbar2dHtml: "<div class='alright_top_rt'>" +
@@ -22,8 +24,8 @@ DCI.map2dTool = {
                "<li class='publine'></li>" +
                "<li class='zoomIn' id='zoomIn'><a href='javascript:void(0)' class='zoomInbg'><span class='zoomInlabel'></span>缩小</a></li>" +
                "<li class='publine'></li>" +
-               "<li class='panMove' id='panMove'><a href='javascript:void(0)' class='panMovebg'><span class='panMovelabel'></span>漫游</a></li>" +
-               "<li class='publine'></li>" +
+            //    "<li class='panMove' id='panMove'><a href='javascript:void(0)' class='panMovebg'><span class='panMovelabel'></span>漫游</a></li>" +
+            //    "<li class='publine'></li>" +
 		       "<li class='PlotlTool' id='bPlot'><a href='javascript:void(0);' class='Pointbg'><span class='Plotlabel'></span>态势标绘</a></li>" +
 		       "<li class='publine'></li>" +
 		       "<li class='legend' id='legend'><a href='javascript:void(0);' class='legendbg'><span class='legendlabel'></span>图例</a></li>" +
@@ -78,7 +80,11 @@ DCI.map2dTool = {
             DCI.poup.clearAndhide();
             DCI.poup.showPoup("W");
         });
-
+        //危险区域
+        $("#warnArea").click(function(){
+            DCI.poup.clearAndhide();
+            DCI.warnArea.loadArea();
+        });
         $("#tool_container").append(DCI.map2dTool.toolbar2dHtml);
         $("#tLi").bind("mouseover", function () {
             $("#toolDiv").show();

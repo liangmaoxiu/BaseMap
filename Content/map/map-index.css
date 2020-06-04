@@ -219,7 +219,6 @@ li {
     color: #000000;
 }
 .alleft_top_rt{
-    margin-left: 50px;
     font-family: "微软雅黑", "宋体", arial;
     font-size: 12px;
     float: left;
@@ -1197,6 +1196,13 @@ li {
     text-align: center;
     margin: 0 auto;
     padding-top: 30px;
+}
+/*左侧工具栏*/
+.warnArea{
+    border: 1px solid #fff;
+    width: 80px;
+    padding: 4px 1px 4px 1px;
+    cursor: pointer;
 }
 
 

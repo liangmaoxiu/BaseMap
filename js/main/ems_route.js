@@ -21,7 +21,7 @@ ems.route = {
         sgeometry:null,
         accidentPosition: {//默认事故对象模版
             eventName: "xx仓库气体泄漏",
-            ocrTime: "2016-8-4 13:54",
+            ocrTime: "2020-06-04 13:54",
             x: "",
             y: ""
         },
@@ -495,8 +495,8 @@ ems.route = {
 	        ems.route.params.outSpatialReference = ems.route.map.spatialReference;
 	        //solve 
 		    // esriConfig.defaults.io.proxyUrl = getRootPath() + "pages/map/print/proxy.jsp";
-	        esriConfig.defaults.io.proxyUrl = getRootPath() + "proxy.ashx";
-            esriConfig.defaults.io.alwaysUseProxy = true;
+	        // esriConfig.defaults.io.proxyUrl = getRootPath() + "proxy.ashx";
+            // esriConfig.defaults.io.alwaysUseProxy = true;
 	        ems.route.closestFacilityTask.solve(ems.route.params, function(solveResult){
 	          if(solveResult.routes.length>0){
 	        	  for(var i=0;i<solveResult.routes.length;i++){

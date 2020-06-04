@@ -37,6 +37,7 @@ dojo.addOnLoad(function() {
     dojo.require("esri.symbols.TextSymbol");
     dojo.require("esri.symbols.SimpleMarkerSymbol");
     dojo.require("esri.symbols.SimpleLineSymbol");
+    dojo.require("esri.symbols.SimpleFillSymbol");
     dojo.require("esri.symbols.CartographicLineSymbol");
     //esri.symbol.CartographicLineSymbol
     dojo.require("esri.renderers.SimpleRenderer");
@@ -141,18 +142,29 @@ function load2DMap() {
     var pane1 = DCI.sidebarCtrl.createItem("空间查询", "查询", false, "nav_but_spa", "spatialQuery");
     pane1.append(DCI.SpatialQuery.Html); //加载显示的内容
     DCI.SpatialQuery.Init(map);
-    //最短路径分析
-    var panel = DCI.sidebarCtrl.createItem("路线导航", "轨迹", false, "nav_but_ml", "road");
-    panel.append(DCI.Route.html); //加载显示的内容
-    DCI.Route.Init(map);
-    //路径附近设施服务分析
-    var panel = DCI.sidebarCtrl.createItem("路线设施", "物资", false, "nav_but_ml", "closestroad");
-    panel.append(ems.route.html); //加载显示的内容
-    ems.route.Init(map);
+     //最短路径分析  这里改成历史轨迹
+     var panel = DCI.sidebarCtrl.createItem("历史轨迹", "轨迹", false, "nav_but_ml", "road");
+     panel.append(DCI.Route.html); //加载显示的内容
+     DCI.Route.Init(map);
+     //临近物资
+     var panel = DCI.sidebarCtrl.createItem("临近物资", "物资", false, "nav_but_ml", "closestroad");
+     panel.append(ems.route.html); //加载显示的内容
+     ems.route.Init(map);
+     //2020/05/29 by ali add 物资 隐患 救援
+     // 人员位置
+     DCI.poup.Init(map);
+     // 隐患位置
+     DCI.warnArea.Init(map);
+     //逃生路线
+     var panel=DCI.sidebarCtrl.createItem("逃生路线","路线",false,"nav_but_ml","help");
+     panel.append(DCI.Help.html); //加载显示的内容
+     DCI.Help.Init(map);
     //2020/05/29 by ali add 物资 隐患 救援
-    //var panel=DCI   人员位置
     DCI.poup.Init(map);
-
+    //设备添加
+    var pane1 = DCI.sidebarCtrl.createItem("设备添加", "添加", false, "nav_but_ml", "equipAdd");
+    pane1.append(DCI.add.html); //加载显示的内容
+    DCI.add.Init(map);
 }
 // 获得煤矿id
 function GetQueryString(name)
@@ -272,6 +284,9 @@ DCI.sidebarCtrl = {
                     break;
                 case "road": //最短路径分析
                     DCI.Route.InitState();
+                    break;
+                case "help": //逃生路径分析
+                    DCI.Help.InitState();
                     break;
             }
             //各个不同功能模块之间切换--清空Graphic

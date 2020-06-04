@@ -2,7 +2,7 @@
     mapDivId: null,
     map: null,
     flag: null,
-    construct: function(map, options, flag) {
+    construct: function (map, options, flag) {
         this.mapDivId = map.id;
         this.map = map;
         this.flag = flag;
@@ -10,10 +10,10 @@
             this.showLayerControl(options);
         }
     },
-    showLayerControl: function(options) {
+    showLayerControl: function (options) {
         var T = this;
         var layerCtl = new LayerContorl(this.mapDivId, options);
-        layerCtl.changMap = function() {
+        layerCtl.changMap = function () {
             T.changeBaseMap(arguments);
         };
         //默认加载第一项作为底图
@@ -92,7 +92,7 @@
 
         }
     },
-    changeBaseMap: function(arg) {
+    changeBaseMap: function (arg) {
         var T = this;
         var service = arg[0];
         var baseMapID = "BaseMapID";
@@ -203,7 +203,7 @@
         //	}
         //}
     },
-    createMap: function(mapType) {
+    createMap: function (mapType) {
         //销毁对象map,再重现创建map	
         var T = this;
         T.map.destroy();
@@ -262,7 +262,7 @@ LayerContorl = DObject({
     index: 0,
     changMap: null,
     itemsInfo: null,
-    construct: function(divId, options) {
+    construct: function (divId, options) {
         var T = this;
         this.map = map;
         this.itemsInfo = options;
@@ -270,10 +270,10 @@ LayerContorl = DObject({
         var ctlDiv = document.createElement("div");
         ctlDiv.id = "mapswitch";
         ctlDiv.className = "map_switch";
-        ctlDiv.onmouseover = function() {
+        ctlDiv.onmouseover = function () {
             T._itemMouseover(this);
         };
-        ctlDiv.onmouseout = function() {
+        ctlDiv.onmouseout = function () {
             T._itemMouseout(this);
         };
         pDiv.appendChild(ctlDiv);
@@ -287,11 +287,11 @@ LayerContorl = DObject({
         }
     },
     //type: 0地图,1影像，2地形
-    _drawItem: function(type, label, imgUrl, className) {
+    _drawItem: function (type, label, imgUrl, className) {
         var T = this;
         var itemDiv = document.createElement("div");
         itemDiv.className = "map_switch_item";
-        itemDiv.onclick = function() {
+        itemDiv.onclick = function () {
             T._itemClick(this);
         };
         var itemHover = document.createElement("div");
@@ -312,13 +312,13 @@ LayerContorl = DObject({
         itemHover.appendChild(itemLabel);
         return itemDiv;
     },
-    _itemMouseover: function(arg) {
+    _itemMouseover: function (arg) {
         arg.style.width = "600px";
         for (var i = 0; i < this.items.length; i++) {
             this.items[i].style.display = "block";
         }
     },
-    _itemMouseout: function(arg) {
+    _itemMouseout: function (arg) {
         arg.style.width = "70px";
         for (var i = 0; i < this.items.length; i++) {
             var div = this.items[i];
@@ -329,7 +329,7 @@ LayerContorl = DObject({
             }
         }
     },
-    _itemClick: function(arg) {
+    _itemClick: function (arg) {
         for (var i = 0; i < this.items.length; i++) {
             var div = this.items[i];
             if (arg == div) {
@@ -346,7 +346,7 @@ LayerContorl = DObject({
 WMTSLayer = DObject({
     url: null,
     esriLayer: null,
-    construct: function(url, options) {
+    construct: function (url, options) {
         this.url = url;
         var tileUrl = url;
         var stdParams = {
@@ -359,7 +359,7 @@ WMTSLayer = DObject({
         };
         stdParams = DUtil.extend(stdParams, options);
         dojo.declare("ESRITiledMapServiceLayer", esri.layers.TiledMapServiceLayer, {
-            constructor: function() {
+            constructor: function () {
                 this.url = url;
                 this.spatialReference = new esri.SpatialReference(MapConfig.params_tile.spatialReference);
                 this.initialExtent = new esri.geometry.Extent({
@@ -383,7 +383,7 @@ WMTSLayer = DObject({
                     this.id = stdParams.id;
                 }
             },
-            getTileUrl: function(level, row, col) {
+            getTileUrl: function (level, row, col) {
                 var serviceUrl = encodeURI(tileUrl);
                 if (serviceUrl[serviceUrl.length - 1] == "/") {
                     serviceUrl = serviceUrl.substring(0, serviceUrl.length - 1);
@@ -396,10 +396,10 @@ WMTSLayer = DObject({
         });
         this.esriLayer = new ESRITiledMapServiceLayer();
     },
-    hide: function() {
+    hide: function () {
         this.esriLayer.hide();
     },
-    show: function() {
+    show: function () {
         this.esriLayer.show();
     }
 });
@@ -407,13 +407,13 @@ WMSLayer = DObject({
     url: null,
     esriLayer: null,
     standardParams: null,
-    construct: function(url, options) {
+    construct: function (url, options) {
         this.url = url;
         var wmsUrl = url;
         this.standardParams = DUtil.extend(MapConfig.params_wms.urlParam, options);
         var stdParams = this.standardParams;
         dojo.declare("ESRIWMSLayer", esri.layers.DynamicMapServiceLayer, {
-            constructor: function() {
+            constructor: function () {
                 this.url = url;
                 this.spatialReference = new esri.SpatialReference(stdParams.spatialReference);
                 this.initialExtent = new esri.geometry.Extent({
@@ -436,7 +436,7 @@ WMSLayer = DObject({
                     this.id = stdParams.id;
                 }
             },
-            getImageUrl: function(extent, width, height, callback) {
+            getImageUrl: function (extent, width, height, callback) {
                 if (!wmsUrl) {
                     alert("esri.layers.DynamicMapServiceLayer: url 不能为空");
                     return;
@@ -450,34 +450,34 @@ WMSLayer = DObject({
         });
         this.esriLayer = new ESRIWMSLayer();
     },
-    getFormat: function() {
+    getFormat: function () {
         return this.standardParams.format;
     },
-    getBgColor: function() {
+    getBgColor: function () {
         return this.standardParams.bgcolor;
     },
-    getLayers: function() {
+    getLayers: function () {
         return this.standardParams.layers;
     },
-    getStyles: function() {
+    getStyles: function () {
         return this.standardParams.styles;
     },
-    getSrs: function() {
+    getSrs: function () {
         return this.standardParams.srs;
     },
-    getBBox: function() {
+    getBBox: function () {
         return this.standardParams.bbox;
     },
-    hide: function() {
+    hide: function () {
         this.esriLayer.hide();
     },
-    show: function() {
+    show: function () {
         this.esriLayer.show();
     },
-    getVisibility: function() {
+    getVisibility: function () {
         return this.esriLayer.visible;
     },
-    setImageTransparency: function(flag) {
+    setImageTransparency: function (flag) {
         return this.esriLayer.imageTransparency = flag;
     }
 });
@@ -486,13 +486,13 @@ GAODELayer = DObject({
     id: null,
     esriLayer: null,
     esriLayerType: 'road',
-    construct: function(options) {
+    construct: function (options) {
         DUtil.extend(this, options);
         //			dojo.declare.safeMixin(this, options);
         dojo.declare("GaoDeTiledMapServiceLayer", esri.layers.TiledMapServiceLayer, {
             id: null,
             layertype: "road", //图层类型
-            constructor: function(args) {
+            constructor: function (args) {
                 this.spatialReference = new esri.SpatialReference(MapConfig.mapInitParams.gaode_spatialReference);
                 DUtil.extend(this, args);
                 this.fullExtent = new esri.geometry.Extent({
@@ -514,7 +514,7 @@ GAODELayer = DObject({
              * @param col
              * @returns {string}
              */
-            getTileUrl: function(level, row, col) {
+            getTileUrl: function (level, row, col) {
                 var url = "";
                 switch (this.layertype) {
                     case "road": //矢量
@@ -535,10 +535,10 @@ GAODELayer = DObject({
         });
         this.esriLayer = new GaoDeTiledMapServiceLayer({ id: this.id, layertype: this.esriLayerType });
     },
-    hide: function() {
+    hide: function () {
         this.esriLayer.hide();
     },
-    show: function() {
+    show: function () {
         this.esriLayer.show();
     }
 });
@@ -547,12 +547,12 @@ BDLayer = DObject({
     id: null,
     esriLayer: null,
     esriLayerType: 'bd_vec',
-    construct: function(options) {
+    construct: function (options) {
         DUtil.extend(this, options);
         dojo.declare("BDTiledMapServiceLayer", esri.layers.TiledMapServiceLayer, {
             id: null,
             layertype: "bd_vec", //图层类型
-            constructor: function(args) {
+            constructor: function (args) {
                 this.spatialReference = new esri.SpatialReference(MapConfig.mapInitParams.bd_spatialReference);
                 DUtil.extend(this, args);
                 this.fullExtent = new esri.geometry.Extent({
@@ -574,7 +574,7 @@ BDLayer = DObject({
              * @param col
              * @returns {string}
              */
-            getTileUrl: function(level, row, col) {
+            getTileUrl: function (level, row, col) {
                 var zoom = level - 1;
                 var offsetX = parseInt(Math.pow(2, zoom));
                 var offsetY = offsetX - 1;
@@ -601,10 +601,10 @@ BDLayer = DObject({
         });
         this.esriLayer = new BDTiledMapServiceLayer({ id: this.id, layertype: this.esriLayerType });
     },
-    hide: function() {
+    hide: function () {
         this.esriLayer.hide();
     },
-    show: function() {
+    show: function () {
         this.esriLayer.show();
     }
 });
@@ -613,12 +613,12 @@ TDTLayer = DObject({
     id: null,
     esriLayer: null,
     esriLayerType: 'vec', //默认矢量类型
-    construct: function(options) {
+    construct: function (options) {
         DUtil.extend(this, options);
         dojo.declare("TDTTiledMapServiceLayer", esri.layers.TiledMapServiceLayer, {
             id: null,
             layertype: "vec", //图层类型
-            constructor: function(args) {
+            constructor: function (args) {
                 this.spatialReference = new esri.SpatialReference(MapConfig.mapInitParams.spatialReference);
                 DUtil.extend(this, args);
                 this.fullExtent = new esri.geometry.Extent({
@@ -640,7 +640,7 @@ TDTLayer = DObject({
              * @param col
              * @returns {string}
              */
-            getTileUrl: function(level, row, col) {
+            getTileUrl: function (level, row, col) {
                 var url = "";
                 switch (this.layertype) {
                     case "vec": //矢量类型
@@ -664,10 +664,10 @@ TDTLayer = DObject({
         });
         this.esriLayer = new TDTTiledMapServiceLayer({ id: this.id, layertype: this.esriLayerType });
     },
-    hide: function() {
+    hide: function () {
         this.esriLayer.hide();
     },
-    show: function() {
+    show: function () {
         this.esriLayer.show();
     }
 });
