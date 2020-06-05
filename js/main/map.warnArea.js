@@ -28,8 +28,5 @@ DCI.warnArea={
         });
          var graphic=new esri.Graphic(geometry,symbol);
          graphicslayer.add(graphic);
-    },
-    //加载集团层禁采区
-
-    //加载集团层矿区范围
+    }
 }

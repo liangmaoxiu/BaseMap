@@ -50,7 +50,7 @@ DCI.add = {
 			 "</div>"+
 		   "<div class='route_serch_left'>" +
 		   '<button type="button" class="btn btn-primary" id="addBtn" style="margin:10px 30px;">确定</button>'+
-		   '<button type="button" class="btn btn-white" style="margin:10px 30px;">取消</button>'+
+		   '<button type="button" class="btn btn-white" style="margin:10px 30px;" id="cancelBtn">取消</button>'+
 		   "</div>",
 		//模块初始化函数
 		Init:function(map){
@@ -61,14 +61,19 @@ DCI.add = {
 			DCI.add.drawtool.on("draw-end", DCI.add.addToMap);
 		    //箭头点添加点击事件
 			$("#pointArrow").bind("click", function (event) {
-				DCI.add.pointlayer.clear();
+				// 点击之前先把地图上的图层清理干净
+				DCI.add.clearAndhide();
 			    $("#pointLocation").val("");
 			    DCI.add.map.setMapCursor('crosshair');
 			    DCI.add.drawtool.activate(esri.toolbars.Draw.POINT);
 			})
-			 //确定添加点击事件
-			 $("#addBtn").bind("click", function () {
+			//确定添加点击事件
+			$("#addBtn").bind("click", function () {
 				DCI.add.submit();
+			})                                                
+			//取消
+			$("#cancelBtn").bind("click", function () {
+				DCI.add.InitState();
 			})
 		},
 		submit:function(){
@@ -161,11 +166,12 @@ DCI.add = {
 		/**
 		 * 恢复原始状态
 		 */ 
-		initState:function(){
-			DCI.add.graphicslayer.clear();
-			if(DCI.add.intervalId){
-				window.clearInterval(DCI.add.intervalId);
-			}			
+		clearAndhide:function(){
+			DCI.add.map.graphics.clear();
+			for (var i = 0; i < DCI.add.map.graphicsLayerIds.length; i++) {
+				var layer = DCI.add.map.getLayer(DCI.add.map.graphicsLayerIds[i]);
+				layer.clear();
+			}
 		},
         /**
          * 切换到其他模块再回来--默认初始化状态

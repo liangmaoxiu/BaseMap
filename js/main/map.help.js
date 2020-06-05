@@ -424,8 +424,6 @@ DCI.Help = {
         $("#helpRouteStar").val("");
         $("#helpRouteEnd").val("");
         $("#helphelpRouteshowList").empty();
-    },
-
-
+    }
 
 }
