@@ -90,8 +90,6 @@ DCI.Help = {
                 DCI.Help.pointlayer.clear();
                 DCI.Help.map.graphics.clear();
                 DCI.Help.routeParams.stops.features = [];
-                // $("#routeStar").val("");
-                // $("#routeEnd").val("");
                 DCI.Help.flag = true;
 
                 DCI.Help.map.setMapCursor('crosshair');

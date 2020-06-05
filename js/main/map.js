@@ -147,7 +147,7 @@ function load2DMap() {
      panel.append(DCI.Route.html); //加载显示的内容
      DCI.Route.Init(map);
      //临近物资
-     var panel = DCI.sidebarCtrl.createItem("临近物资", "物资", false, "nav_but_ml", "closestroad");
+     var panel = DCI.sidebarCtrl.createItem("临近物资", "物资", false, "nav_but_tj", "closestroad");
      panel.append(ems.route.html); //加载显示的内容
      ems.route.Init(map);
      //2020/05/29 by ali add 物资 隐患 救援
@@ -156,15 +156,13 @@ function load2DMap() {
      // 隐患位置
      DCI.warnArea.Init(map);
      //逃生路线
-     var panel=DCI.sidebarCtrl.createItem("逃生路线","路线",false,"nav_but_ml","help");
+     var panel=DCI.sidebarCtrl.createItem("逃生路线","路线",false,"nav_but_bh","help");
      panel.append(DCI.Help.html); //加载显示的内容
      DCI.Help.Init(map);
-    //2020/05/29 by ali add 物资 隐患 救援
-    DCI.poup.Init(map);
-    //设备添加
-    var pane1 = DCI.sidebarCtrl.createItem("设备添加", "添加", false, "nav_but_ml", "equipAdd");
-    pane1.append(DCI.add.html); //加载显示的内容
-    DCI.add.Init(map);
+     //设备添加
+     var pane1 = DCI.sidebarCtrl.createItem("设备添加", "添加", false, "nav_but_dz", "equipAdd");
+     pane1.append(DCI.add.html); //加载显示的内容
+     DCI.add.Init(map);
 }
 // 获得煤矿id
 function GetQueryString(name)
@@ -282,11 +280,17 @@ DCI.sidebarCtrl = {
                 case "spatialQuery": //空间查询
                     DCI.SpatialQuery.InitState();
                     break;
-                case "road": //最短路径分析
+                case "road": //轨迹
                     DCI.Route.InitState();
+                    break;
+                case "closestroad": //物资
+                    ems.route.InitState();
                     break;
                 case "help": //逃生路径分析
                     DCI.Help.InitState();
+                    break;
+                case "equipAdd": //设备添加
+                    DCI.add.InitState();
                     break;
             }
             //各个不同功能模块之间切换--清空Graphic
